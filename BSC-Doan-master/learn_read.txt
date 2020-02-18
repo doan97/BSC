@@ -1,0 +1,17 @@
+l30 - l36: GUI stuff
+l38 - l40: create one agent and put into agents[]
+l45 - l47: creates one obstacle
+
+l66 - l124: für alle Epochen lernen
+	in each epoch:
+		reset_agents()
+		reset_obstacles()
+		
+		for each mini_epoch:
+			define next from and to step (?)
+			learning_szenario (obstacles)
+			
+			create random motor commands(create_inputs_and_targets())
+	
+			all agents learn (a.learning_mini_epoch())
+			with from_step, to_step, NUM_TIME_STEPS

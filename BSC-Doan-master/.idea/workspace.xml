@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="7fbc5209-3536-4e80-a84c-1ff794afbd1e" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="BSC-Doan-master" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1TW5gRElw9AXMdn3M1CWWNJ3KWT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$USER_HOME$/WS1920-Hille/exp/gamma/util.py" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco/datas2" />
+      <recent name="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco/compare_models" />
+      <recent name="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco/saves/compare_models" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.start_the_shiaat">
+    <configuration name="actinf" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="BSC-Doan-master" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco/actinf.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="agent" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="BSC-Doan-master" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco/agent.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="compare_grid" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="BSC-Doan-master" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco/compare_grid.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="start_the_shiaat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="BSC-Doan-master" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco/start_the_shiaat.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_grid" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="BSC-Doan-master" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/stuff/code-MarcoKinkel/pytorch_model_marco/test_grid.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.start_the_shiaat" />
+        <item itemvalue="Python.actinf" />
+        <item itemvalue="Python.compare_grid" />
+        <item itemvalue="Python.test_grid" />
+        <item itemvalue="Python.agent" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7fbc5209-3536-4e80-a84c-1ff794afbd1e" name="Default Changelist" comment="" />
+      <created>1573563121901</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1573563121901</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="555" y="215" width="800" height="675" key="#Inspections" timestamp="1580690995912">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="555" y="215" width="800" height="675" key="#Inspections/0.27.1920.1053@0.27.1920.1053" timestamp="1580690995912" />
+    <state x="1563" y="259" width="355" height="560" key="#com.intellij.ide.util.MemberChooser" timestamp="1580690904087">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="1563" y="259" width="355" height="560" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1580690904087" />
+    <state x="3648" y="259" width="374" height="560" key="#com.intellij.ide.util.MemberChooser/0.27.4480.1053@0.27.4480.1053" timestamp="1580608477310" />
+    <state x="743" y="311" width="424" height="482" key="FileChooserDialogImpl" timestamp="1580994496549">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="743" y="311" width="424" height="482" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1580994496549" />
+    <state width="1875" height="236" key="GridCell.Tab.0.bottom" timestamp="1581343478205">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1898" height="188" key="GridCell.Tab.0.bottom/0.27.1920.1053/1920.0.2560.1080@0.27.1920.1053" timestamp="1580568498671" />
+    <state width="1258" height="188" key="GridCell.Tab.0.bottom/0.27.1920.1053/1920.0.2560.1080@1920.0.2560.1080" timestamp="1580560114645" />
+    <state width="1875" height="236" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1581343478205" />
+    <state width="2515" height="236" key="GridCell.Tab.0.bottom/0.27.2560.1053@0.27.2560.1053" timestamp="1580778304384" />
+    <state width="1258" height="395" key="GridCell.Tab.0.bottom/0.27.4480.1053@0.27.4480.1053" timestamp="1580609265592" />
+    <state width="1875" height="236" key="GridCell.Tab.0.center" timestamp="1581343478205">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1898" height="188" key="GridCell.Tab.0.center/0.27.1920.1053/1920.0.2560.1080@0.27.1920.1053" timestamp="1580568498671" />
+    <state width="1258" height="188" key="GridCell.Tab.0.center/0.27.1920.1053/1920.0.2560.1080@1920.0.2560.1080" timestamp="1580560114645" />
+    <state width="1875" height="236" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1581343478205" />
+    <state width="2515" height="236" key="GridCell.Tab.0.center/0.27.2560.1053@0.27.2560.1053" timestamp="1580778304383" />
+    <state width="1258" height="395" key="GridCell.Tab.0.center/0.27.4480.1053@0.27.4480.1053" timestamp="1580609265591" />
+    <state width="1875" height="236" key="GridCell.Tab.0.left" timestamp="1581343478204">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1898" height="188" key="GridCell.Tab.0.left/0.27.1920.1053/1920.0.2560.1080@0.27.1920.1053" timestamp="1580568498671" />
+    <state width="1258" height="188" key="GridCell.Tab.0.left/0.27.1920.1053/1920.0.2560.1080@1920.0.2560.1080" timestamp="1580560114645" />
+    <state width="1875" height="236" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1581343478204" />
+    <state width="2515" height="236" key="GridCell.Tab.0.left/0.27.2560.1053@0.27.2560.1053" timestamp="1580778304383" />
+    <state width="1258" height="395" key="GridCell.Tab.0.left/0.27.4480.1053@0.27.4480.1053" timestamp="1580609265591" />
+    <state width="1875" height="236" key="GridCell.Tab.0.right" timestamp="1581343478205">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1898" height="188" key="GridCell.Tab.0.right/0.27.1920.1053/1920.0.2560.1080@0.27.1920.1053" timestamp="1580568498671" />
+    <state width="1258" height="188" key="GridCell.Tab.0.right/0.27.1920.1053/1920.0.2560.1080@1920.0.2560.1080" timestamp="1580560114645" />
+    <state width="1875" height="236" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1581343478205" />
+    <state width="2515" height="236" key="GridCell.Tab.0.right/0.27.2560.1053@0.27.2560.1053" timestamp="1580778304383" />
+    <state width="1258" height="395" key="GridCell.Tab.0.right/0.27.4480.1053@0.27.4480.1053" timestamp="1580609265592" />
+    <state width="2538" height="408" key="GridCell.Tab.1.bottom" timestamp="1580609416687">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="2538" height="408" key="GridCell.Tab.1.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1580609416687" />
+    <state width="2538" height="408" key="GridCell.Tab.1.bottom/0.27.4480.1053@0.27.4480.1053" timestamp="1580596775207" />
+    <state width="2538" height="408" key="GridCell.Tab.1.center" timestamp="1580609416687">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="2538" height="408" key="GridCell.Tab.1.center/0.27.1920.1053@0.27.1920.1053" timestamp="1580609416687" />
+    <state width="2538" height="408" key="GridCell.Tab.1.center/0.27.4480.1053@0.27.4480.1053" timestamp="1580596775206" />
+    <state width="2538" height="408" key="GridCell.Tab.1.left" timestamp="1580609416686">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="2538" height="408" key="GridCell.Tab.1.left/0.27.1920.1053@0.27.1920.1053" timestamp="1580609416686" />
+    <state width="2538" height="408" key="GridCell.Tab.1.left/0.27.4480.1053@0.27.4480.1053" timestamp="1580596775206" />
+    <state width="2538" height="408" key="GridCell.Tab.1.right" timestamp="1580609416687">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="2538" height="408" key="GridCell.Tab.1.right/0.27.1920.1053@0.27.1920.1053" timestamp="1580609416687" />
+    <state width="2538" height="408" key="GridCell.Tab.1.right/0.27.4480.1053@0.27.4480.1053" timestamp="1580596775207" />
+    <state x="456" y="188" key="SettingsEditor" timestamp="1580691486954">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="456" y="188" key="SettingsEditor/0.27.1920.1053@0.27.1920.1053" timestamp="1580691486954" />
+    <state width="498" height="445" key="SwitcherDM" timestamp="1580770103275">
+      <screen x="0" y="27" width="2560" height="1053" />
+    </state>
+    <state width="498" height="445" key="SwitcherDM/0.27.2560.1053@0.27.2560.1053" timestamp="1580770103275" />
+    <state x="630" y="381" key="com.intellij.ide.util.TipDialog" timestamp="1580994339605">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="2760" y="363" key="com.intellij.ide.util.TipDialog/0.27.1920.1053/1920.0.2560.1080@1920.0.2560.1080" timestamp="1580554198341" />
+    <state x="630" y="381" key="com.intellij.ide.util.TipDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1580994339605" />
+    <state x="840" y="381" key="com.intellij.ide.util.TipDialog/0.27.2560.1053@0.27.2560.1053" timestamp="1580769820060" />
+    <state x="3597" y="228" width="475" height="621" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1580554407849">
+      <screen x="1920" y="0" width="2560" height="1080" />
+    </state>
+    <state x="3597" y="228" width="475" height="621" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.27.1920.1053/1920.0.2560.1080@1920.0.2560.1080" timestamp="1580554407849" />
+    <state x="2757" y="279" width="876" height="520" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1580592818201">
+      <screen x="0" y="27" width="4480" height="1053" />
+    </state>
+    <state x="2757" y="279" width="876" height="520" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.27.4480.1053@0.27.4480.1053" timestamp="1580592818201" />
+    <state x="831" y="259" width="896" height="678" key="search.everywhere.popup" timestamp="1580775440905">
+      <screen x="0" y="27" width="2560" height="1053" />
+    </state>
+    <state x="2751" y="238" width="896" height="696" key="search.everywhere.popup/0.27.1920.1053/1920.0.2560.1080@1920.0.2560.1080" timestamp="1580558325515" />
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1580691630247" />
+    <state x="831" y="259" width="896" height="678" key="search.everywhere.popup/0.27.2560.1053@0.27.2560.1053" timestamp="1580775440905" />
+    <state x="1454" y="259" width="1568" height="679" key="search.everywhere.popup/0.27.4480.1053@0.27.4480.1053" timestamp="1580605785997" />
+  </component>
+</project>

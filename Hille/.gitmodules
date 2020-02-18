@@ -1,0 +1,3 @@
+[submodule "src/RecurrentInferenceFramework"]
+	path = src/RecurrentInferenceFramework
+	url = https://github.com/CognitiveModeling/RecurrentInferenceFramework

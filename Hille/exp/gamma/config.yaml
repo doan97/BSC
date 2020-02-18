@@ -1,0 +1,162 @@
+default:
+  seed : 123
+  log location : logs/
+  log level : debug
+  file : checkpoints/run_123.pickle
+  load : True
+  mode : -1
+
+environment:
+  gui active : True
+  verbose : False
+
+  left border : -1.5
+  right border : 1.5
+  top border : 3.0
+  bot border : 0.0
+
+  delta time : 0.04
+
+  number of obstacles : 0
+  positions of obstacles : None
+  radii of obstacles : 0.06
+  number of problems : 1
+
+  max thrust : 1.0
+  min motor value : 0.0
+  max motor value : 1.0
+
+  point spread : True
+  point spread type : gauss # or linear
+  point spread size : 0.1
+  point spread sigma : 1.0
+  point spread clip min : 0.0
+  point spread clip max : 1.0
+  point spread round decimals : 8
+
+  normalize sensor readings : True
+  max distance : 10.0
+  border proximity weight : 0.5
+  position dimensions : 2
+  sensor reading dimensions : 16
+  motor command dimensions : 4
+
+  max absolute obstacle start velocity : 0.015
+  obstacle line acceleration factor : 1.005
+  max absolute obstacle rotation radius : 0.2
+  obstacle curve acceleration factor : 1.005
+
+  default object mass : 0.1
+
+
+model:
+  position weight learning : 100
+  acceleration weight learning : 0.01
+  sensor weight learning : 10.0
+
+  use sensor sensitivity : False
+  learn sensor sensitivity : False
+
+  # length of sequences for which the connection between hidden states is relevant
+  sequence length : 25
+
+  # maximum size of the ring buffer for >experience replay<
+  maximum memory size: 1000
+
+  # optimizing config
+  learning rate : 0.01
+  batch size : 100
+
+  # module config : simple lstm  x -> h0 -> ... -> hn -> y
+  # input dim = input_dim  # dimension of x
+  hidden dimension : 32  # Dimension von h
+  number of layers : 1  # number of vertical LSTM layers
+  # output dim = output_dim  # dimension of y
+
+gui:
+  verbose : False
+  title : Simulator
+  resizable : False
+  draw scale : 250.0
+
+  line distance : 10  # in pixel
+
+  offset : AllDown  # or None
+
+  panel background : white
+  grid fill color : gray
+
+  marker id : None
+  marker color : yellow
+  marker radius : 0.03
+
+  text color : black
+  prediction error text color change threshold : 0.01
+  target error text color change threshold : 0.01
+
+  # unused
+  # frames per second : 30.0
+  # time steps per second : 1000
+
+  agent colors : [red, blue]
+  agent text colors : [blue, red]
+  agent text size : 10
+
+  thrust color : yellow
+  thrust factor : 4.0
+
+  prediction circle radius scale : 0.6
+  prediction circle color : black
+  prediction text color : white
+  prediction text size : 5
+
+  target circle radius scale : 0.7
+  target circle color : green
+  target text color : black
+  target text size : 7
+
+  obstacle circle color : gray
+  obstacle text color : black
+  obstacle text size : 10
+
+  # PLOT
+  show sensor plot : False
+
+  visual learning : False
+  visual learning step by step : True
+
+
+inference:
+  # Amount of epochs of size NUM_MINI_EPOCHS
+  number of epochs : 2000
+
+  inference iterations : 5
+  prediction horizon : 10
+  step size : 0.1
+
+  target change frequency : 50
+
+  mask gradients at proximity : False
+
+  use scv : True
+  scv smoothing factor : 0.5
+  scv weighting factor : 4
+  scv beta : 4
+
+  plot scv goals : True
+
+  position loss weight : 1.0
+  sensor reading loss weight : 0.0
+
+  vehicle : 1
+
+
+train:
+  # Amount of epochs of size NUM_MINI_EPOCHS
+  number of epochs : 200
+
+  # Amount of mini-epochs of size NUM_TIME_STEPS
+  number of mini epochs : 15
+
+  # Amount of steps until a new scenario is chosen
+  number of time steps : 10

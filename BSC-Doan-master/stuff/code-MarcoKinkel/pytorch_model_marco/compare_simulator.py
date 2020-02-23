@@ -22,8 +22,9 @@ NUMBER_OF_PROBLEMS = 1
 
 class Simulator(object):
     def __init__(self, mode=0, maxthrust=1.0, leftborder=-1.5, rightborder=1.5, topborder=2.0, delta_time=1. / 30.,
-                 stopwatch=None):
-        self.use_borders = False
+                 stopwatch=None, use_border=True):
+        self.use_borders = use_border
+
         self.maxthrust = maxthrust
         self.leftborder = leftborder
         self.rightborder = rightborder
@@ -176,6 +177,7 @@ class Simulator(object):
                                                             current_agent.other_agents, time_step)
         else:
             new_velocity, new_position = hypvel, hyppos
+
         if self.mode in (RB3Mode.Stepper2Dir.value, RB3Mode.Stepper.value):
             new_velocity = np.zeros(self.sensor_dim)
 

@@ -36,7 +36,7 @@ class Tools(QtWidgets.QMainWindow):
 
         #TODO
         #TRAINING:
-
+        self.border = False
 
         #ACTINF:
         #timesteps in total
@@ -67,7 +67,8 @@ class Tools(QtWidgets.QMainWindow):
                       + str(NUM_MINI_EPOCHS) + ' '
                       + str(NUM_TIME_STEPS) + ' '
                       + str(LEARNING_RATE) + ' '
-                      + model_name)
+                      + model_name + ' '
+                      + str(self.border))
         else:
             os.system('python3 ./compare_train.py ' \
                       + str(NUM_EPOCHS) + ' '
@@ -78,7 +79,8 @@ class Tools(QtWidgets.QMainWindow):
                       + 'True' + ' ' #velocity noise
                       + 'False' + ' ' #velocity dropout
                       + str(val_noise) + ' '
-                      + str(val_drop))
+                      + str(val_drop) + ' '
+                      + str(self.border))
 
     def make_checkboxes_and_progress(self):
         self.obj.checkbox_one_step = QCheckBox("One-step", self.obj)
@@ -119,18 +121,18 @@ class Tools(QtWidgets.QMainWindow):
         model_name = 'v_drop_'
 
         for i in range(6):
-            dropout_rate = (i+1) / 10
+            dropout_rate = (i+1) * 0.1
             name = model_name + str(dropout_rate)
 
             self.train(name, v_noise=False, v_drop=True, val_noise=0, val_drop=dropout_rate)
 
     def train_multiple_nd(self):
         model_name = 'v_'
-        for i in range(6):
-            noise_rate = (i + 1) * 0.1
+        for i in range(7):
+            noise_rate = i * 0.1
             name = model_name + str(noise_rate) + '_'
-            for j in range(6):
-                dropout_rate = (j + 1) / 10
+            for j in range(7):
+                dropout_rate = j * 0.1
                 c_name = name + str(dropout_rate)
                 self.train(c_name, v_noise=True, v_drop=True, val_noise=noise_rate, val_drop=dropout_rate)
 
@@ -151,7 +153,12 @@ class Tools(QtWidgets.QMainWindow):
             id = self.models.index(model_name)
             if self.one_step:
                 os.system(
-                    'python3 ./temp_actinf.py ./compare_models/' + model_name + ' ' + str(id) + ' ' + '1step' + ' ' + str(self.time_steps))
+                    'python3 ./temp_actinf.py ./compare_models/'
+                    + model_name + ' '
+                    + str(id) + ' '
+                    + '1step' + ' '
+                    + str(self.time_steps)+ ' '
+                    + str(self.border))
                 counter += 1
                 self.obj.progress.setValue(int(counter / full_percent * 100))
             if self.two_step:

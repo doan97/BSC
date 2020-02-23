@@ -8,7 +8,7 @@ import torch.optim as optim
 import time
 
 import global_config as c
-from simulator import Simulator
+from compare_simulator import Simulator
 from data import Data
 from gui import GUI
 from compare_agent import Agent
@@ -25,6 +25,7 @@ model_name = sys.argv[5]
 #gauss machen
 v_noise = sys.argv[6]
 v_drop = sys.argv[7]
+use_border = sys.argv[10]
 
 
 import faulthandler
@@ -41,7 +42,10 @@ def train():
     name = model_name
 
     s = Stopwatch()
-    sim = Simulator(mode=1, stopwatch=s)
+    if use_border == 'True':
+        sim = Simulator(mode=1, stopwatch=s)
+    else:
+        sim = Simulator(mode=1, stopwatch=s, use_border=False)
 
     agents = []
     # a1 = Agent(id='A8', color='red', init_pos=np.array([0., 1.]), lr=LEARNING_RATE , gui=gui, sim=sim, num_epochs=NUM_EPOCHS)
@@ -113,9 +117,9 @@ def train():
             for a in agents:
                 printAndPlot(epoch, a)
 
-        if epoch % 20 == 0 and epoch < NUM_EPOCHS:
-            for a in agents:
-                a.save('./created_models/mode_' + name + '_epoch' + str(epoch) + '.pt')
+        #if epoch % 20 == 0 and epoch < NUM_EPOCHS:
+        ##    for a in agents:
+        #        a.save('./created_models/mode_' + name + '_epoch' + str(epoch) + '.pt')
 
         for a in agents:
             a.scheduler.step(a.losses[-1])
@@ -335,7 +339,7 @@ def printAndPlot(epoch, a, final=False):
 
     print(string)
 
-    a.plot.plot(plot_losses, persist=final)
+    a.plot.plot(plot_losses, persist=False)#final)
 
 
 train()

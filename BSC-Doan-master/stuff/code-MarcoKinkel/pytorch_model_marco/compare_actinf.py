@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import global_config as c
-from simulator import Simulator
+from compare_simulator import Simulator
 from compare_agent import Agent
 from stopwatch import Stopwatch
 
@@ -19,6 +19,7 @@ comp_model_path = sys.argv[1]
 
 comp_id = sys.argv[2]
 compare_step = sys.argv[3]
+border = sys.argv[5]
 
 
 
@@ -36,7 +37,10 @@ def actinf(compare=True):
     LEARNING_RATE = .01  # .01
 
     s = Stopwatch()
-    sim = Simulator(mode=1, stopwatch=s)
+    if border == 'True':
+        sim = Simulator(mode=1, stopwatch=s)
+    else:
+        sim = Simulator(mode=1, stopwatch=s, use_border=False)
     gui = None
     agents = []
     obstacles = []

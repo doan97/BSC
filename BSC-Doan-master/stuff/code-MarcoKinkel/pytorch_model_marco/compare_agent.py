@@ -12,7 +12,7 @@ import time
 import matplotlib.pyplot as plt
 
 import global_config as c
-from simulator import Simulator, point_spread
+from compare_simulator import Simulator, point_spread
 from data import Data
 from Gui_Attributes import Gui_attributes
 from Net import Net

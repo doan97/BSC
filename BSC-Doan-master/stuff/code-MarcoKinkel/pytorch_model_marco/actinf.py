@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import global_config as c
-from simulator import Simulator
+from compare_simulator import Simulator
 from data import Data
 from gui import GUI
 from compare_agent import Agent
@@ -26,6 +26,9 @@ def actinf():
     #comp_start = comp.Start()
 
     faulthandler.enable()
+
+    fix_targets = False
+    one_step_actinf = False
 
     # CONSTANTS
     NUM_ALL_STEPS = 240  # Amount of epochs of size NUM_MINI_EPOCHS
@@ -892,7 +895,7 @@ def actinf():
             show_sensor_plot=False,
             init_pos=np.array([-0.01, 0.8]),#davon sind motorcommands2 [0, 1.25]), #m3 schoener! [-0.01, 0.8]),
             gui=gui, sim=sim,
-            modelfile='./saves/mode_T15_final.pt'
+            modelfile='./compare_models/v_0.6_0.1' #'./saves/mode_T15_final.pt'
         )
 
         agents.append(a1)
@@ -918,7 +921,10 @@ def actinf():
             if (from_step == 0):
                 # Create new target for the next target period plus the future prediction time steps
                 print(int(a1.target_steps_total / TARGET_CHANGE_FREQUENCY))
-                a1.create_target(1, NUM_TIME_STEPS, compare_targets[c_target])
+                if fix_targets:
+                    a1.create_target(1, NUM_TIME_STEPS, compare_targets[c_target])
+                else:
+                    a1.create_target(1, NUM_TIME_STEPS)
             else:
                 if (a1.on_target_steps < 1000 and a1.target_steps_total < TARGET_CHANGE_FREQUENCY):
                     # Keep same target
@@ -928,7 +934,10 @@ def actinf():
                 else:
                     # Create new target
                     print(int(a1.target_steps_total / TARGET_CHANGE_FREQUENCY))
-                    a1.create_target(1, NUM_TIME_STEPS, compare_targets[c_target])
+                    if fix_targets:
+                        a1.create_target(1, NUM_TIME_STEPS, compare_targets[c_target])
+                    else:
+                        a1.create_target(1, NUM_TIME_STEPS)
                     a1.target_steps_total = 0
 
             # Every time step
@@ -1109,7 +1118,8 @@ def actinf():
             # and apply gradients to motor commands
             for a in agents:
                 velinf_needed = (c.MODE is 10 and a.id is 'B') or c.MODE is 82
-                #velinf_needed = True
+                if velinf_needed:
+                    if one_step_actinf: velinf_needed = False
 
                 if velinf_needed:
                     # Perform velocity inference:

@@ -21,6 +21,8 @@ mini_epochs = sys.argv[2]
 time_steps = sys.argv[3]
 learning_rate = sys.argv[4]
 model_name = sys.argv[5]
+
+#gauss machen
 v_noise = sys.argv[6]
 v_drop = sys.argv[7]
 

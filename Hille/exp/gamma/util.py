@@ -1019,3 +1019,41 @@ def get_angle_ray(dirs, i, length, ball_pos):
     """
     i %= len(dirs)
     return ball_pos + (length * dirs[i] / np.linalg.norm(dirs[i]))
+
+
+def get_random_motorcommands(timesteps):
+    """
+
+    Parameters
+    ----------
+    timesteps
+
+    Returns
+    -------
+
+    """
+    motorcommands = [random_command() for i in range(timesteps)]
+
+def random_command(actuators, no_opposite):
+    command = []
+    if not no_opposite:
+        for i in range(actuators):
+            command.append(np.random.random_sample()) #random value between 0 and 1
+    else:
+        #always only four actuators
+        #no oppsite actuators action
+        left_top = True if np.random.random_sample() < 0.5 else False
+        right_bottom = not left_top
+        left_bottom = True if np.random.random_sample() < 0.5 else False
+        right_top = not left_top
+        action_needed = [left_bottom, right_bottom, left_top, right_top]
+        command = []
+        for i in range(4):
+            if action_needed[i]:
+                command.append(np.random.random_sample())
+            else:
+                command.append(0)
+
+    return command
+
+

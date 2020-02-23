@@ -33,6 +33,27 @@ class Tools(QtWidgets.QMainWindow):
         self.time_steps = 10
         self.canvases = []
 
+
+        #TODO
+        #TRAINING:
+
+
+        #ACTINF:
+        #timesteps in total
+        #time steps in future
+
+        #border on or off (compare_simulator)
+        #fix targets (for Agent A)
+        #make fix targets
+
+        #fix movements (for Agent A)
+        #choose from folder?
+        #create fix movements
+
+        #one or two step inference
+        #Test all again without borders
+
+
     def train(self, name, v_noise=False, v_drop=False, val_noise=None, val_drop=None):
         NUM_EPOCHS = 200  # Amount of epochs of size NUM_MINI_EPOCHS
         NUM_MINI_EPOCHS = 30  # Amount of mini-epochs of size NUM_TIME_STEPS

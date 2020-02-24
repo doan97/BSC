@@ -90,11 +90,11 @@ class Tools(QtWidgets.QMainWindow):
         self.obj.checkbox_one_step.setChecked(True)
         self.obj.checkbox_two_step.setChecked(True)
 
-        progress = QProgressBar(self.obj)
-        progress.setGeometry(200, 80, 250, 20)
+        self.obj.progress = QProgressBar(self.obj)
+        self.obj.progress.setGeometry(200, 80, 250, 20)
 
         sublayout = QtWidgets.QBoxLayout(0, parent=self.obj._main)
-        sublayout.addWidget(progress)
+        sublayout.addWidget(self.obj.progress)
         sublayout.addWidget(self.obj.checkbox_one_step)
         sublayout.addWidget(self.obj.checkbox_two_step)
 

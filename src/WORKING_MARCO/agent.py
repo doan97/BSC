@@ -34,9 +34,11 @@ class Agent(object):
             v_clamp_target_velocity_value=c.CLAMP_TARGET_VELOCITY_VALUE_VELINF,
             less_inputs=False,
             motor_only=False,
-            input_type='all'
+            input_type='all',
+            output_type='all'
 
     ):
+        self.output_type = output_type
         self.less_inputs = less_inputs
         self.hidden_states = []
         self.id = id_
@@ -58,14 +60,21 @@ class Agent(object):
         # Create and load trained model, if given
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         if self.input_type == 'motor only':
-            self.net = Net(c.INPUT_MOTOR_DIM, c.HIDDEN_DIM, c.OUTPUT_DIM).to('cpu')
+            INPUT_DIM = 4
         elif self.input_type == 'motor and sensor':
-            self.net = Net(c.INPUT_SENSOR_DIM + c.INPUT_MOTOR_DIM, c.HIDDEN_DIM, c.OUTPUT_DIM).to('cpu')
+            INPUT_DIM = 20
         elif self.input_type == 'all':
-            self.net = Net(c.INPUT_DIM, c.HIDDEN_DIM, c.OUTPUT_DIM).to('cpu')
-        self.net_sensor = Net(c.INPUT_DIM - 4, c.HIDDEN_DIM, c.OUTPUT_DIM).to('cpu') #without vel, pos as input
+            INPUT_DIM = 24
+        if self.output_type == 'all':
+            OUTPUT_DIM = 20
+        elif self.output_type == 'sensor only':
+            OUTPUT_DIM = 16
+        print(INPUT_DIM, OUTPUT_DIM)
+        self.net = Net(INPUT_DIM, c.HIDDEN_DIM, OUTPUT_DIM).to('cpu')
 
+        self.net_sensor = Net(c.INPUT_DIM - 4, c.HIDDEN_DIM, c.OUTPUT_DIM).to('cpu') #without vel, pos as input
         self.net_motor_only = Net(4, c.HIDDEN_DIM, c.OUTPUT_DIM).to('cpu')
+        self.net_sensor_only = Net(20, c.HIDDEN_DIM, c.INPUT_SENSOR_DIM).to('cpu')
 
         #self.net_sensor.load_state_dict(self.net.state_dict())
 
@@ -92,6 +101,11 @@ class Agent(object):
             self.scheduler3 = optim.lr_scheduler.ReduceLROnPlateau(self.optimiser3, mode='min', factor=0.5, patience=10,
                                                                   verbose=True, threshold=0.0001, threshold_mode='rel',
                                                                   cooldown=0, min_lr=0, eps=1e-08)
+
+            self.optimiser4 = optim.Adam(self.net_sensor_only.parameters(), lr=lr)
+            self.scheduler4 = optim.lr_scheduler.ReduceLROnPlateau(self.optimiser4, mode='min', factor=0.5, patience=10,
+                                                                   verbose=True, threshold=0.0001, threshold_mode='rel',
+                                                                   cooldown=0, min_lr=0, eps=1e-08)
 
 
         # Initialize hidden states
@@ -121,6 +135,7 @@ class Agent(object):
         self.losses = []
         self.losses2 = []
         self.losses3 = []
+        self.losses4 = []
         #self.loss_net_sensor = []
         #self.loss_marco = []
         self.losses_positions = []
@@ -189,6 +204,7 @@ class Agent(object):
             self.plot = Plot(titles=plot_titles, ylims=plot_limit_y, xlims=plot_limit_x, title=id_, linetype=line_type)
             self.plot2 = Plot(titles=plot_titles, ylims=plot_limit_y, xlims=plot_limit_x, title=id_, linetype=line_type)
             self.plot3 = Plot(titles=plot_titles, ylims=plot_limit_y, xlims=plot_limit_x, title=id_, linetype=line_type)
+            self.plot4 = Plot(titles=plot_titles, ylims=plot_limit_y, xlims=plot_limit_x, title=id_, linetype=line_type)
 
             if c.INPUT_SENSOR_DIM > 0 and show_sensor_plot is True:
                 # TODO there is no other occurrence of .sensor_plot in the corresponding project files
@@ -758,6 +774,7 @@ class Agent(object):
         predictions, last_state = self.net.forward(inputs)
         predictions_sensor_net, last_state = self.net_sensor.forward(sensor_net_input)
         predictions_motor_net, last_state = self.net_motor_only.forward(motor_net_input)
+        predictions_sensor_only_net, last_state = self.net_sensor_only.forward(sensor_net_input)
 
         position_change_predictions = predictions[:, c.OUTPUT_POSITION_DIM_START:c.OUTPUT_POSITION_DIM_END]
         position_change_predictions2 = predictions_sensor_net[:, c.OUTPUT_POSITION_DIM_START:c.OUTPUT_POSITION_DIM_END]
@@ -766,6 +783,8 @@ class Agent(object):
         sensor_predictions = predictions[:, c.OUTPUT_SENSOR_DIM_START:c.OUTPUT_SENSOR_DIM_END]
         sensor_predictions2 = predictions_sensor_net[:, c.OUTPUT_SENSOR_DIM_START:c.OUTPUT_SENSOR_DIM_END]
         sensor_predictions3 = predictions_motor_net[:, c.OUTPUT_SENSOR_DIM_START:c.OUTPUT_SENSOR_DIM_END]
+        sensor_predictions4 = predictions_sensor_only_net[:, 0:]
+
 
         acceleration_predictions = predictions[:, c.OUTPUT_ACCELERATION_DIM_START:c.OUTPUT_ACCELERATION_DIM_END]
         acceleration_predictions2 = predictions_sensor_net[:, c.OUTPUT_ACCELERATION_DIM_START:c.OUTPUT_ACCELERATION_DIM_END]
@@ -813,6 +832,8 @@ class Agent(object):
                 c.SENSOR_WEIGHT_LEARNING * self.mse(sensor_predictions2, sensor_targets)
             loss_sensors3 = \
                 c.SENSOR_WEIGHT_LEARNING * self.mse(sensor_predictions3, sensor_targets)
+            loss_sensors4 = \
+                c.SENSOR_WEIGHT_LEARNING * self.mse(sensor_predictions4, sensor_targets)
 
         if c.OUTPUT_ACCELERATION_DIM == 0:
             loss_accelerations = torch.tensor(0.)
@@ -827,6 +848,7 @@ class Agent(object):
         loss = loss_positions + loss_sensors + loss_accelerations
         loss2 = loss_positions2 + loss_sensors2 + loss_accelerations2
         loss3 = loss_positions3 + loss_sensors3 + loss_accelerations3
+        loss4 = loss_sensors4
 
         #self.loss_net_sensor.append([loss_positions2.item(), loss_sensors2.item(), loss_accelerations2.item()])
         #self.loss_marco.append([loss_positions.item(), loss_sensors.item(), loss_accelerations.item()])
@@ -835,27 +857,33 @@ class Agent(object):
         self.optimiser.zero_grad()
         self.optimiser2.zero_grad()
         self.optimiser3.zero_grad()
+        self.optimiser4.zero_grad()
 
         # Perform back ward pass
         loss.backward()
         loss2.backward()
         loss3.backward()
+        loss4.backward()
 
         # Update parameters
         self.optimiser.step()
         self.optimiser2.step()
         self.optimiser3.step()
+        self.optimiser4.step()
 
         # Store losses for visualization
         self.losses.append(loss.item())
         self.losses2.append(loss2.item())
         self.losses3.append(loss3.item())
+        self.losses4.append(loss4.item())
         self.losses_positions.append(loss_positions.item())
         self.losses_positions2.append(loss_positions2.item())
         self.losses_positions3.append(loss_positions3.item())
         self.losses_sensors.append(loss_sensors.item())
         self.losses_sensors2.append(loss_sensors2.item())
         self.losses_sensors3.append(loss_sensors3.item())
+
+
         self.losses_accelerations.append(loss_accelerations.item())
         self.losses_accelerations2.append(loss_accelerations2.item())
         self.losses_accelerations3.append(loss_accelerations3.item())
@@ -864,6 +892,7 @@ class Agent(object):
         torch.save(self.net.state_dict(), model_file + '_A')
         torch.save(self.net_sensor.state_dict(), model_file + '_B')
         torch.save(self.net_motor_only.state_dict(), model_file + '_C')
+        torch.save(self.net_sensor_only.state_dict(), model_file + '_D')
 
     def get_input_data(self, from_step, to_step):
         input_data = self.data.get_combined_inputs_block(from_step, to_step)

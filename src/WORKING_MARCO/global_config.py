@@ -59,7 +59,7 @@ POINT_SPREAD_TYPE = 'gauss'  # or linear
 SPREADSIZE = 0.1  # 0.2 means the signal decreases by 0.2 times the number of sensors per sensor
 SIGMA = 1.0  # Sigma for Gaussian distribution
 
-BORDER_PROXIMITY_WEIGHT = 0.5  # 0.5
+BORDER_PROXIMITY_WEIGHT = 0.  # 0.5
 
 USE_SENSOR_SENSITIVITY = False
 LEARN_SENSOR_SENSITIVITY = False

@@ -128,7 +128,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import time
 
 class LiveGui(Tk):
-    def __init__(self, path, obstacles, target, sensor_pred_count=3):
+    def __init__(self, path, obstacles, target, sensor_pred_count=3, fast=False):
         super(LiveGui, self).__init__()
         self.target = target
         self.title('Actinf live View')
@@ -146,6 +146,7 @@ class LiveGui(Tk):
                              command=self.lulz2)
         #self.button2.pack(side=LEFT)
         self.button2.grid(row= 2, column=3)
+        self.fast = fast
 
 
         self.sensor_real = True
@@ -156,6 +157,7 @@ class LiveGui(Tk):
         self.draw_thought_obstacles = (len(self.data[5]) > 0)
         self.obstacles = obstacles
         self.tkinter_objects = []
+        self.sensor_pred_plots = []
         self.time_step = 0
         self.max_time_step = len(self.data[0]) - 1
         self.scale = Scale(self, from_=0, to=self.max_time_step, length=600, tickinterval=10,orient=HORIZONTAL)
@@ -168,7 +170,11 @@ class LiveGui(Tk):
         self.scale2.set(self.fps)
         self.init_current_sensor_canvas()
         self.init_environment_canvas()
-        self.init_states_canvas()
+        if not self.fast:
+            self.init_states_canvas()
+            self.init_target_distance_canvas()
+            self.init_obstacle_distance_canvas()
+            self.init_sensor_pred_canvas()
         #self.init_sensor_pred_canvases()
         self.after(int(1000 / self.fps), self.start)
         self.mainloop()
@@ -180,7 +186,7 @@ class LiveGui(Tk):
         ax.set_ylim([-1., 1.])
         self.current_hidden_plot = ax
         self.current_hidden_plot.plot(states[0][0][0])
-        ax.set_title('States')
+        self.current_hidden_plot.set_title('States')
         self.current_hidden_canvas = FigureCanvasTkAgg(f, self)
         self.current_hidden_canvas.draw()
         #self.current_hidden_canvas.get_tk_widget().pack(side=LEFT, expand=False)
@@ -189,33 +195,41 @@ class LiveGui(Tk):
 
     def update_state_canvas(self):
         self.current_hidden_plot.clear()
+        self.current_hidden_plot.set_title('States')
         self.current_hidden_plot.set_ylim([-1., 1.])
         self.current_hidden_plot.plot(self.data[7][self.time_step][0][0][0], color='red')
         self.current_hidden_plot.plot(self.data[7][self.time_step][1][0][0], color='blue')
         self.current_hidden_canvas.draw()
 
-    def init_sensor_pred_canvases(self):
-        for i in range(self.sensor_pred_count):
-            sensor_data = self.data[1][self.time_step][0]
-            bottom = 0
-            size = 16
+    def init_sensor_pred_canvas(self):
+        sensor_predictions = self.data[5][self.time_step]
 
-            width = (2 * np.pi) / size
-            offset = width / 2.
-            theta = np.linspace(offset, 2 * np.pi + offset, size, endpoint=False)
-            radii = np.empty((size,))
+        bottom = 0
+        size = 16
 
-            f, ax = plt.subplots(1, 1, subplot_kw=dict(polar=True))
-            ax.set_ylim([0., 1.])
-            self.current_sensor_data_bars = ax.bar(theta, radii, width=width, bottom=bottom, edgecolor='black',
-                                                   fill=False,
-                                                   linewidth=2)
-            ax.set_title('sensor data')
-            [self.current_sensor_data_bars[i].set_height(sensor_data[i]) for i in
-             range(len(self.current_sensor_data_bars))]
-            self.current_sensor_canvas = FigureCanvasTkAgg(f, self)
-            self.current_sensor_canvas.draw()
-            self.current_sensor_canvas.get_tk_widget().pack(side=BOTTOM, fill=BOTH, expand=False)
+        width = (2 * np.pi) / size
+        offset = width / 2.
+        theta = np.linspace(offset, 2 * np.pi + offset, size, endpoint=False)
+        radii = np.empty((size,))
+        plot_count = 3
+        f, ax = plt.subplots(plot_count, subplot_kw=dict(polar=True))
+        for idx, sensor_data in enumerate(sensor_predictions):
+            if idx < plot_count:
+                bar = ax[idx].bar(theta, radii, width=width, bottom=bottom, edgecolor='black',fill=False,linewidth=2)
+                self.sensor_pred_plots.append(bar)
+                [bar[i].set_height(sensor_data[i]) for i in range(len(bar))]
+
+        self.sensor_pred_canvas = FigureCanvasTkAgg(f, self)
+        self.sensor_pred_canvas.draw()
+        self.sensor_pred_canvas.get_tk_widget().grid(row=1, column=4)
+
+    def update_sensor_pred_canvas(self):
+        sensor_predictions = self.data[5][self.time_step]
+        for idx,bar in enumerate(self.sensor_pred_plots):
+            [bar[i].set_height(sensor_predictions[idx][i]) for i in range(len(bar))]
+        self.sensor_pred_canvas.draw()
+
+
 
     def lulz(self):
         if self.time_step == self.max_time_step:
@@ -233,7 +247,11 @@ class LiveGui(Tk):
         if self.time_step <= self.max_time_step:
             self.update_current_sensor_canvas()
             self.update_environment_canvas()
-            self.update_state_canvas()
+            if not self.fast:
+                self.update_state_canvas()
+                self.update_target_distance_canvas()
+                self.update_obstacle_distance_canvas()
+                self.update_sensor_pred_canvas()
             if not self.pause:
                 self.scale.set(self.time_step + 1)
             self.after(int(1000/self.fps), self.start)
@@ -303,8 +321,9 @@ class LiveGui(Tk):
             self.tkinter_objects.append(o)
 
         r = 10
-        self.environment_canvas.create_oval(self.target[0] - r, self.target[1] - r, self.target[0] + r,
-                                            self.target[1] + r, fill='green')
+        target = transform_pos(self.target, -1.5, 1.5, 0, 2, 600, 400)
+        self.environment_canvas.create_oval(target[0] - r, target[1] - r, target[0] + r,
+                                            target[1] + r, fill='green')
 
 
     def draw_thought_obstacle_position(self, r):
@@ -316,6 +335,54 @@ class LiveGui(Tk):
                                                     fill='blue')
             self.tkinter_objects.append(o)
         return r
+
+    def init_target_distance_canvas(self):
+        self.distances_to_position_target = [np.array(p) - np.array(self.target) for p in self.data[0]]
+        self.distances_to_position_target = [np.sqrt(p[0]**2 + p[1]**2) for p in self.distances_to_position_target]
+        f, ax = plt.subplots()
+        ax.set_ylim([0, 3.])
+        self.current_distance_plot = ax
+        self.current_distance_plot.plot(self.distances_to_position_target[:self.time_step + 1])
+        ax.set_title('Distance to target')
+        self.current_distance_canvas = FigureCanvasTkAgg(f, self)
+        self.current_distance_canvas.draw()
+        # self.current_hidden_canvas.get_tk_widget().pack(side=LEFT, expand=False)
+        self.current_distance_canvas.get_tk_widget().grid(row=0, column=4)
+
+    def update_target_distance_canvas(self):
+        self.current_distance_plot.clear()
+        self.current_distance_plot.set_title('Distance to target')
+        self.current_distance_plot.set_ylim([0., 3.])
+        self.current_distance_plot.plot(self.distances_to_position_target[:self.time_step + 1], color='red')
+        self.current_distance_canvas.draw()
+
+    def get_closest_obstacle_distance(self, p):
+        min = np.inf
+        for o in self.obstacles:
+            v = np.array(p) - np.array(o)
+            d = np.sqrt(v[0]**2 + v[1]**2)
+            if d < min:
+                min = d
+        return min
+
+    def init_obstacle_distance_canvas(self):
+        self.distances_to_nearest_obstacle = [self.get_closest_obstacle_distance(p) for p in self.data[0]]
+        f, ax = plt.subplots()
+        ax.set_ylim([0, 3.])
+        self.current_obstacle_distance_plot = ax
+        self.current_obstacle_distance_plot.plot(self.distances_to_nearest_obstacle[:self.time_step + 1])
+        ax.set_title('Distance to nearest obstacle')
+        self.current_obstacle_canvas = FigureCanvasTkAgg(f, self)
+        self.current_obstacle_canvas.draw()
+        # self.current_hidden_canvas.get_tk_widget().pack(side=LEFT, expand=False)
+        self.current_obstacle_canvas.get_tk_widget().grid(row=1, column=1)
+
+    def update_obstacle_distance_canvas(self):
+        self.current_obstacle_distance_plot.clear()
+        self.current_obstacle_distance_plot.set_title('Distance to nearest obstacle')
+        self.current_obstacle_distance_plot.set_ylim([0., 3.])
+        self.current_obstacle_distance_plot.plot(self.distances_to_nearest_obstacle[:self.time_step + 1], color='red')
+        self.current_obstacle_canvas.draw()
 
     def init_environment_canvas(self):
         position = self.data[0][self.time_step]
@@ -335,9 +402,9 @@ class LiveGui(Tk):
             self.tkinter_objects.append(o)
 
         r = 10
-        self.target = transform_pos(self.target, -1.5, 1.5, 0, 2, 600, 400)
-        self.environment_canvas.create_oval(self.target[0] - r, self.target[1] - r, self.target[0] + r,
-                                            self.target[1] + r, fill='green')
+        target = transform_pos(self.target, -1.5, 1.5, 0, 2, 600, 400)
+        self.environment_canvas.create_oval(target[0] - r, target[1] - r, target[0] + r,
+                                            target[1] + r, fill='green')
 
     def init_current_sensor_canvas(self):
         sensor_data = self.data[1][self.time_step][0]
@@ -350,7 +417,7 @@ class LiveGui(Tk):
         radii = np.empty((size,))
 
         f, ax = plt.subplots(1, 1, subplot_kw=dict(polar=True))
-        ax.set_ylim([0., 1.])
+        ax.set_ylim([0., 2.])
         self.current_sensor_data_bars = ax.bar(theta, radii, width=width, bottom=bottom, edgecolor='black', fill=False,
                                   linewidth=2)
         ax.set_title('sensor data')
@@ -379,4 +446,30 @@ class LiveGui(Tk):
 
 
 if __name__ =='__main__':
-    g = LiveGui('./models/without_border/no_obstacles/run_A.npy', [[-1., 1.5], [1., 1.5], [-1.,0.5], [1.,0.5]], [1., 1.8])
+    g = LiveGui('./testing_models/run_D.npy', [[-1., 1.5], [1., 1.5], [-1.,0.5], [1.,0.5]], [1., 1.8],\
+                fast=False)
+
+#Models:
+#without border
+# /models/with_border/moving_obstacles/run_A.npy done (okey)
+# /models/with_border/moving_obstacles/run_A_seek.npy done (not bad)
+# /models/with_border/moving_obstacles/run_B.npy done (kinda bad)
+# /models/with_border/moving_obstacles/run_B_seek.npy done (bad)
+# /models/with_border/moving_obstacles/run_C.npy done (good)
+# /models/with_border/moving_obstacles/run_C_seek.npy done (bad)
+
+#without border
+# /models/with_border/no_obstacles/run_A.npy done (good)
+# /models/with_border/no_obstacles/run_A_seek.npy done (bad)
+# /models/with_border/no_obstacles/run_B.npy done (not that bad)
+# /models/with_border/no_obstacles/run_B_seek.npy done (bad)
+# /models/with_border/no_obstacles/run_C.npy done (ok)
+# /models/with_border/no_obstacles/run_C_seek.npy done (bad)
+
+#with border
+# /models/with_border/static_obstacles/run_A.npy done (ok)
+# /models/with_border/static_obstacles/run_A_seek.npy done (bad)
+# /models/with_border/static_obstacles/run_B.npy done (bad)
+# /models/with_border/static_obstacles/run_B_seek.npy done (bad)
+# /models/with_border/static_obstacles/run_C.npy done (ok)
+# /models/with_border/static_obstacles/run_C_seek.npy done (bad)

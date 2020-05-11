@@ -17,12 +17,12 @@ np.random.seed(seed)
 torch.manual_seed(seed)
 
 #Action inference
-def action_inference(model_file, init_pos, target_position, obstacle_positions, timesteps=1, actinf_iterations=1, prediction_horizon=1, input_type='all', seek_proximity=False):
+def action_inference(model_file, init_pos, target_position, obstacle_positions, timesteps=1, actinf_iterations=1, prediction_horizon=1, input_type='all', seek_proximity=False, output_type='all', seek_direct=False):
     gui = None
     s = Stopwatch()
     sim = Simulator(mode=1, stopwatch=s)
     agent = Agent(id_='A', color='red', init_pos=init_pos, gui=gui, sim=sim,
-                   model_file=model_file, input_type=input_type)
+                   model_file=model_file, input_type=input_type, output_type=output_type)
     used_motor_commands = []
 
     positions = []
@@ -59,7 +59,9 @@ def action_inference(model_file, init_pos, target_position, obstacle_positions, 
                                               current_sensor_information,
                                               current_state,
                                               input_type=input_type,
-                                              seek_proximity=seek_proximity)
+                                              seek_proximity=seek_proximity,
+                                              output_type=output_type,
+                                              seek_direct=seek_direct)
             #shift motorcommands
             command_sequence = list(motor_commands[1:])
             #add a new pseudo random motorcommand, with the last command in sequence
@@ -101,17 +103,20 @@ def action_inference(model_file, init_pos, target_position, obstacle_positions, 
 
     return positions, sensor_information_of_all_steps, used_motor_commands, velocities, accelerations, sensor_predictions_all, seek_velocities_all, all_states
 
-def actinf_iteration(agent, command_sequence, init_pos, targets_pos, velocity, acceleration, sensor_information, hidden_state, input_type='all', seek_proximity=False):
+def actinf_iteration(agent, command_sequence, init_pos, targets_pos, velocity, acceleration, sensor_information, hidden_state, input_type='all', seek_proximity=False, output_type='all', seek_direct=False):
     #coms = np.random.random((prediction_horizon,4))[:, np.newaxis]
     coms = command_sequence
-    position_delta_predictions, sensor_predictions, inputs = predict(coms, agent, velocity, sensor_information, acceleration, hidden_state, input_type=input_type)
-    position_delta_targets = get_velocity_delta_targets(init_pos, position_delta_predictions, targets_pos)
+    position_delta_predictions, sensor_predictions, inputs = predict(coms, agent, velocity, sensor_information, acceleration, hidden_state, input_type=input_type, output_type=output_type)
+    if output_type == 'all':
+        position_delta_targets = get_velocity_delta_targets(init_pos, position_delta_predictions, targets_pos)
+    else:
+        position_delta_targets = None
 
     sensor_targets = get_sensor_targets(sensor_predictions)
-    motor_commands, optim_velocities = action_inference_step(position_delta_predictions, position_delta_targets, sensor_predictions, sensor_targets, inputs, input_type=input_type, seek_proximity=seek_proximity)
+    motor_commands, optim_velocities = action_inference_step(position_delta_predictions, position_delta_targets, sensor_predictions, sensor_targets, inputs, input_type=input_type, seek_proximity=seek_proximity, seek_direct=seek_direct)
     return motor_commands, sensor_predictions, optim_velocities
 
-def predict(coms, agent, position_delta, sensor_data, acceleration, hidden_state, input_type='all'):
+def predict(coms, agent, position_delta, sensor_data, acceleration, hidden_state, input_type='all', allow_onset=False, output_type='all'):
     position_delta_tensors = []
     acceleration_tensors = []
     sensor_tensors = []
@@ -129,11 +134,11 @@ def predict(coms, agent, position_delta, sensor_data, acceleration, hidden_state
             if input_type == 'motor only':
                 input_data = com
             elif input_type == 'motor and sensor':
-                input_data = np.concatenate([com, sensor_predictions[-1]],axis=1)
+                input_data = np.concatenate([com, sensor_data],axis=1)
             elif input_type == 'all':
-                input_data = np.concatenate([position_delta_predictions[-1], com], axis=1)
-                input_data = np.concatenate([input_data, sensor_predictions[-1]], axis=1)
-                input_data = np.concatenate([input_data, acceleration_predictions[-1]], axis=1)
+                input_data = np.concatenate([position_delta, com], axis=1)
+                input_data = np.concatenate([input_data, sensor_data], axis=1)
+                input_data = np.concatenate([input_data, acceleration], axis=1)
             else:
                 print('input type is not implemented')
                 return
@@ -143,11 +148,11 @@ def predict(coms, agent, position_delta, sensor_data, acceleration, hidden_state
             if input_type == 'motor only':
                 input_data = com
             elif input_type == 'motor and sensor':
-                input_data = np.concatenate([com, np.array([sensor_predictions[-1].detach().numpy()])],axis=1)
+                input_data = np.concatenate([com, np.array([sensor_tensors[-1].detach().numpy()])],axis=1)
             elif input_type == 'all':
-                input_data = np.concatenate([np.array([position_delta_predictions[-1].detach().numpy()]), com], axis=1)
-                input_data = np.concatenate([input_data, np.array([sensor_predictions[-1].detach().numpy()])], axis=1)
-                input_data = np.concatenate([input_data, np.array([acceleration_predictions[-1].detach().numpy()])], axis=1)
+                input_data = np.concatenate([np.array([position_delta_tensors[-1].detach().numpy()]), com], axis=1)
+                input_data = np.concatenate([input_data, np.array([sensor_tensors[-1].detach().numpy()])], axis=1)
+                input_data = np.concatenate([input_data, np.array([acceleration_tensors[-1].detach().numpy()])], axis=1)
             else:
                 print('input type is not implemented')
                 return
@@ -169,29 +174,49 @@ def predict(coms, agent, position_delta, sensor_data, acceleration, hidden_state
         inputs.append(input_data)
         pred = pred.view(-1)
         hidden.append((h, c))
-        position_delta_tensors.append(pred[:2])
-        acceleration_tensors.append(pred[18:])
-        sensor_tensors.append(pred[2:18])
+        if output_type == 'all':
+            position_delta_prediction = pred[:2]
+            acceleration_prediction = pred[18:]
+            sensor_prediction = pred[2:18]
+        elif output_type == 'sensor only':
+            sensor_prediction = pred
+            acceleration_prediction = None
+            position_delta_prediction = None
+        if not allow_onset:
+            for idx, val in enumerate(sensor_prediction):
+                if np.round(sensor_data[0][idx], 3) == 0:
+                    sensor_prediction[idx] = 0
+                else:
+                    sensor_prediction[idx] = val
+            sensor_predictions.append(sensor_prediction)
+        position_delta_tensors.append(position_delta_prediction)
+        acceleration_tensors.append(acceleration_prediction)
+        sensor_tensors.append(sensor_prediction)
 
-        position_delta_predictions.append(pred[0:2])
-        acceleration_predictions.append(pred[18:20])
-        sensor_predictions.append(pred[2:18])
     return position_delta_tensors, sensor_tensors, inputs
 
-def action_inference_step(position_delta_predictions, position_delta_targets, sensor_predictions, sensor_targets,inputs, learning_rate=0.01, input_type='all', seek_proximity=False):
+def action_inference_step(position_delta_predictions, position_delta_targets, sensor_predictions, sensor_targets,inputs, learning_rate=0.01, input_type='all', seek_proximity=False, seek_direct=False):
     mse = nn.MSELoss()
-    predictions_delta_position = torch.stack(position_delta_predictions)
-    position_delta_targets = torch.tensor(position_delta_targets, dtype=torch.float32)
-    predictions_sensor = torch.stack(sensor_predictions)
-    if seek_proximity:
+    if position_delta_predictions[0] is not None:
+        print(position_delta_predictions)
+        predictions_delta_position = torch.stack(position_delta_predictions)
+        position_delta_targets = torch.tensor(position_delta_targets, dtype=torch.float32)
+    if sensor_predictions is not None:
+        predictions_sensor = torch.stack(sensor_predictions)
+    if seek_direct:
         sensor_loss = mse(predictions_sensor, sensor_targets)
-        optimized_velocities = optimize_velocities(input_type, inputs, learning_rate, sensor_loss)
-        position_loss = mse(predictions_delta_position, optimized_velocities)
-    else:
-        position_loss = mse(predictions_delta_position, position_delta_targets)
+        optimized_motor_commands = optimize_motor_commands_sensor_induced(input_type, inputs, learning_rate, sensor_loss)
         optimized_velocities = None
+    else:
+        if seek_proximity:
+            sensor_loss = mse(predictions_sensor, sensor_targets)
+            optimized_velocities = optimize_velocities(input_type, inputs, learning_rate, sensor_loss)
+            position_loss = mse(predictions_delta_position, optimized_velocities)
+        else:
+            position_loss = mse(predictions_delta_position, position_delta_targets)
+            optimized_velocities = None
 
-    optimized_motor_commands = optimize_motor_commands_vel_induced(input_type, inputs, learning_rate, position_loss)
+        optimized_motor_commands = optimize_motor_commands_vel_induced(input_type, inputs, learning_rate, position_loss)
     return optimized_motor_commands, optimized_velocities
 
 def optimize_velocities(input_type, inputs, learning_rate, sensor_loss, sens_l=100):
@@ -207,6 +232,22 @@ def optimize_velocities(input_type, inputs, learning_rate, sensor_loss, sens_l=1
     optimized_velocities = np.clip(optimized_velocities, 0, 1)
     #TESTING
     return torch.tensor(optimized_velocities, dtype=torch.float32)
+
+def optimize_motor_commands_sensor_induced(input_type, inputs, learning_rate, sensor_loss, sens_l=100):
+    loss = sensor_loss
+    optimizer = torch.optim.Adam(inputs, lr=learning_rate, betas=(0, 0.9))
+    optimizer.zero_grad()
+    loss.backward()
+    utils.mask_gradients_(inputs, input_type=input_type)
+    optimizer.step()
+    inputs_tensor = torch.stack(inputs)
+    if input_type == 'all':
+        optimized_motor_commands = inputs_tensor.detach().numpy()[:, -1, -1, c.MOTOR_DIM_START:c.MOTOR_DIM_END]
+    elif input_type == 'motor and sensor' or input_type == 'motor only':
+        optimized_motor_commands = inputs_tensor.detach().numpy()[:, -1, -1, :4]
+
+    optimized_motor_commands = np.clip(optimized_motor_commands, 0, 1)
+    return optimized_motor_commands
 
 def optimize_motor_commands_vel_induced(input_type, inputs, learning_rate, position_loss, vel_l=100):
     velocity_loss = vel_l * position_loss
@@ -264,7 +305,7 @@ def get_sensor_targets(sensor_predictions):
 
 #drawing stuff
 
-def run_that_shit(init_pos, target, obstacles, t=100, models=[True, True, True], seek=False, models_path='', folder=''):
+def run_that_shit(init_pos, target, obstacles, t=100, models=[True, True, True, True], seek=False, models_path='', folder=''):
     if models[0]:
         pos1, sensor_data1, used_coms1, vels1, accs1, sensor_pred1, seek_vels1, states1 = action_inference(
             models_path + 'model_A', np.array(init_pos), np.array(target), obstacles,
@@ -316,35 +357,33 @@ def run_that_shit(init_pos, target, obstacles, t=100, models=[True, True, True],
                                        sensor_pred3,
                                        seek_vels3,
                                        states3])
+    if models[3]:
+        pos4, sensor_data4, used_coms4, vels4, accs4, sensor_pred4, seek_vels4, states4 = action_inference(
+            models_path + 'model_D', np.array(init_pos), np.array(target), obstacles,
+            timesteps=t, actinf_iterations=10,
+            prediction_horizon=10, input_type='motor and sensor', output_type='sensor only', seek_direct=True, seek_proximity=seek)
+        file_name = 'run_D.npy'
+        np.save(folder + file_name, [pos4,
+                                     sensor_data4,
+                                     used_coms4,
+                                     vels4,
+                                     accs4,
+                                     sensor_pred4,
+                                     seek_vels4,
+                                     states4])
+
 
 def run_all():
     obstacles = np.array([[-1., 1.5], [1., 1.5], [-1.,0.5], [1.,0.5]])
     #models = ['./models/with_border/moving_obstacles/', './models/with_border/no_obstacles/', './models/with_border/static_obstacles/',\
-    models = ['./models/without_border/no_obstacles/', './models/without_border/static_obstacles/']
+    #models = ['./models/without_border/no_obstacles/', './models/without_border/static_obstacles/']
+    models = ['./testing_models/']
     for m in models:
         print(m)
-        run_that_shit([0.,1.],[1., 1.8], obstacles, t=200, models_path=m,  folder=m)
-        run_that_shit([0.,1.],[1., 1.8], obstacles, t=200, models_path=m,  folder=m, seek=True)
+        run_that_shit([0.,1.],[1., 1.8], obstacles, t=200, models_path=m,  folder=m, models=[False, False, False, True])
+        #run_that_shit([0.,1.],[1., 1.8], obstacles, t=200, models_path=m,  folder=m, seek=True)
         print('neeext')
 run_all()
-#def show_that_shit(obstacles, target):
-#    folder = './actinf_data/'
-#    pos = np.load(folder + 'run_positions_A.npy')
-#    sensor = np.load(folder + 'run_sensors_A.npy')
-
-    #draw.draw_sensor_data(sensor)
-    #print(sensor[10])
-    #draw.draw_timestep(sensor, pos, obstacles, 100)
-#    draw.draw_path(pos, [target], obstacles)
-
-#def show_that_sensor_induced_shit(obstacles):#not moving obstacles
-#    live_gui = draw.LiveGui('./actinf_data/run_A.npy', obstacles)
-#    #live_gui.start('run_A.npy')
-
-
-#run_that_shit([0.,1.],[1., 1.8], [[-1., 1.5]], t=200, models=[True,False,False], seek=True)
-#show_that_shit([[-1., 1.5], [1., 1.5], [-1.,0.5], [1.,0.5]], [1., 1.8])
-#show_that_sensor_induced_shit([[-1., 1.5]])
 
 #TODO motorcommands pseudo random           done
 # TODO sensorik testen          done
@@ -391,3 +430,8 @@ run_all()
 #       current motor commands,
 #       current acceleration,
 #       predicted sensor information (10),
+
+#TODO
+# actinf output type sensor only            done
+# onset of sensor_information = False       done
+# direct sensor induced action inference    done

@@ -4,7 +4,7 @@ import random
 
 import numpy as np
 
-import WORKING_MARCO.global_config as c
+import bachelor_vinhdo.global_config as c
 
 
 class RB3Mode(enum.Enum):
@@ -680,8 +680,8 @@ def _get_proximity_linear(distance, max_distance):
 def calculate_point_spread_signal(sensor_data):
     point_spread_signal = np.zeros(sensor_data.shape)
     for active_sensor_index, sensor_reading in enumerate(sensor_data):
-        point_spread_signal += point_spread(active_sensor_index, sensor_reading, c.POINT_SPREAD_TYPE)
-
+        new_point_spread_signal = point_spread(active_sensor_index, sensor_reading, c.POINT_SPREAD_TYPE)
+        point_spread_signal = [max(new_point_spread_signal[i], point_spread_signal[i]) for i in range(len(point_spread_signal))]
     return np.round_(
         np.clip(
             point_spread_signal + sensor_data, 0, 1

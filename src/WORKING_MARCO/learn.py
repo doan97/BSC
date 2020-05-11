@@ -103,6 +103,7 @@ def train():
                 print_and_plot(epoch, a)
                 print_and_plot2(epoch, a)
                 print_and_plot3(epoch, a)
+                print_and_plot4(epoch, a)
 
         # if epoch % 20 == 0 and epoch < num_epochs:
         #    for a in agents:
@@ -122,7 +123,7 @@ def train():
     # Save model
     for a in agents:
         print('should be saved')
-        a.save('model')
+        a.save('model_border_30_static')
         #a.save('./saves/mode_' + str(a.id) + '_final.pt')
 
     # Save mean losses
@@ -509,5 +510,42 @@ def print_and_plot3(epoch, a, final=False):
     print(string)
 
     a.plot3.plot(plot_losses, persist=final)
+
+def print_and_plot4(epoch, a, final=False):
+    plot_losses = []
+    f = "{0:0.7f}"
+
+    losses = np.asarray(a.losses4)
+    loss_mean = np.mean(losses)
+    a.mean_losses3 = np.append(a.mean_losses, loss_mean)
+    plot_losses.append(loss_mean)
+
+    loss_positions_mean = -1
+    loss_sensors_mean = -1
+    loss_accelerations_mean = -1
+    plot_losses.append(loss_positions_mean)
+    plot_losses.append(loss_sensors_mean)
+    plot_losses.append(loss_accelerations_mean)
+
+    string = ''
+
+    if not final:
+        string += "E" + str(epoch)
+    else:
+        string += "END"
+
+    string += "\t" + 'SO' + \
+              "\tloss=" + str(f.format(loss_mean)) + \
+              "\tl_pos=" + str(f.format(loss_positions_mean))
+
+    if c.OUTPUT_SENSOR_DIM > 0:
+        string += "\tl_sen=" + str(f.format(loss_sensors_mean))
+
+    if c.OUTPUT_ACCELERATION_DIM > 0:
+        string += "\tl_acc=" + str(f.format(loss_accelerations_mean))
+
+    print(string)
+
+    a.plot4.plot(plot_losses, persist=final)
 
 train()
